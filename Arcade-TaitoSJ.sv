@@ -162,15 +162,35 @@ module emu
 	// 1 - D-/TX
 	// 2..6 - USR2..USR6
 	// Set USER_OUT to 1 to read from USER_IN.
-	input   [6:0] USER_IN,
-	output  [6:0] USER_OUT,
+	output			USER_OSD,
+	output		[1:0] USER_MODE,
+	input		[7:0] USER_IN,
+	output		[7:0] USER_OUT,	
 
 	input         OSD_STATUS
 );
 
 ///////// Default values for ports not used in this core /////////
+wire [15:0] joydb_1,joydb_2;
+wire        joydb_1ena,joydb_2ena;
+joydbmix joydbmix
+(
+  .CLK_JOY(CLK_50M),
+  .JOY_FLAG(status[63:61]),
+  .USER_IN(USER_IN),
+  .USER_OUT(USER_OUT),
+  .USER_MODE(USER_MODE),
+  .USER_OSD(USER_OSD),
+  .joydb_1ena(joydb_1ena),
+  .joydb_2ena(joydb_2ena),
+  .joydb_1(joydb_1),
+  .joydb_2(joydb_2)
+);
+wire [15:0]   joystick_0 = joydb_1ena ? {joydb_1[9],joydb_1[7],joydb_1[6],joydb_1[11]|(joydb_1[10]&joydb_1[5]),joydb_1[10],joydb_1[5:0]} : joystick_0_USB;
+//wire [15:0]   joystick_1 = joydb_2ena ? {joydb_2[10],joydb_2[11]|(joydb_2[10]&joydb_2[5]),joydb_2[9],joydb_2[7:0]} : joydb_1ena ? joystick_0_USB : joystick_1_USB;
+
 assign ADC_BUS  = 'Z;
-assign USER_OUT = '1;
+//assign USER_OUT = '1;
 assign {UART_RTS, UART_TXD, UART_DTR} = 0;
 assign {SD_SCK, SD_MOSI, SD_CS} = 'Z;
 assign {SDRAM_DQ, SDRAM_A, SDRAM_BA, SDRAM_CLK, SDRAM_CKE, SDRAM_DQML, SDRAM_DQMH, SDRAM_nWE, SDRAM_nCAS, SDRAM_nRAS, SDRAM_nCS} = 'Z;
@@ -199,7 +219,7 @@ end
 
 ////////////////////   HPS   /////////////////////
 
-wire [31:0] status;
+wire [63:0] status;
 wire  [1:0] buttons;
 wire        forced_scandoubler;
 wire        direct_video;
@@ -215,7 +235,7 @@ wire  [7:0] ioctl_din;
 wire  [7:0] ioctl_index;
 wire        ioctl_wait;
 
-wire [15:0] joystick_0;
+wire [15:0] joystick_0_USB;
 
 wire [21:0] gamma_bus;
 
@@ -260,6 +280,9 @@ localparam CONF_STR = {
 	"O2,Orientation,Horizontal,Vertical;",
 	"O35,Scandoubler Fx,None,HQ2x,CRT 25%,CRT 50%,CRT 75%;",
 //	"OV,Frequency,60,Original;",	
+	"-;",
+	"oUV,UserIO Joystick,Off,DB15,DB9MD;",
+	"oT,UserIO Players, 1 Player,2 Players;",	
 	"-;",
 	"DIP;",
 	"-;",
@@ -320,8 +343,9 @@ hps_io #(.CONF_STR(CONF_STR)) hps_io
 	//.sd_buff_dout(sd_buff_dout),
 	//.sd_buff_din(sd_buff_din),
 	//.sd_buff_wr(sd_buff_wr),
-
-	.joystick_0(joystick_0)
+	
+	.joy_raw(joydb_1[5:0] | joydb_2[5:0]),
+	.joystick_0(joystick_0_USB)
 );
 
 ////////////////////   CLOCKS   ///////////////////
