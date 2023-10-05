@@ -171,6 +171,7 @@ module emu
 );
 
 ///////// Default values for ports not used in this core /////////
+//DB9 ADD
 wire [15:0] joydb_1,joydb_2;
 wire        joydb_1ena,joydb_2ena;
 joydbmix joydbmix
