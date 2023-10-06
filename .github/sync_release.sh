@@ -4,7 +4,7 @@
 set -euo pipefail
 
 UPSTREAM_REPO="https://github.com/MiSTer-devel/Arcade-TaitoSystemSJ_MiSTer"
-CORE_NAME="TaitoSJ"
+CORE_NAME="Arcade-TaitoSJ"
 MAIN_BRANCH="main"
 
 echo "Fetching upstream:"
