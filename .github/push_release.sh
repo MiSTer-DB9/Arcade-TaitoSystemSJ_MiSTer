@@ -3,7 +3,7 @@
 
 set -euo pipefail
 
-CORE_NAME="TaitoSJ"
+CORE_NAME="Arcade-TaitoSJ"
 MAIN_BRANCH="main"
 COMPILATION_OUTPUT="output_files/Arcade-TaitoSJ.rbf"
 
