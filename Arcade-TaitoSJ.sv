@@ -269,10 +269,20 @@ localparam CONF_STR = {
 	"P1OQ,Dim video after 10s,On,Off;",
 	"-;",
 	"R0,Reset;",
-	"J1,Button 1,Button 2,Start 1P,Start 2P,Coin A,Coin B,Service,Pause;",
-	"Jn,A,B,Start,Select,L,R,X,Y;",
+	"J1,Button 1,Button 2,Coin A,Start 1P,Coin B,Start 2P,Service,Pause,Gun Right,Gun Left,Gun Down,Gun Up;",
+	"jn,A,B,Select,Start,X,Y,L,R,Rright,Rleft,Rdown,Rup;",
+	"jp,A,B,Select,Start,L,R,Y,X,Rright,Rleft,Rdown,Rup;",
+	
+	"I,CORE WRITTEN BY ANTON GALE;",
 	"V,v",`BUILD_DATE
 };
+
+wire m_pause  		= joystick_0[11];
+
+//G17 - IN43 - UP    - 12
+//G18 - IN42 - DOWN  - 13
+//G19 - IN41 - RIGHT - 14
+//G20 - IN40 - LEFT  - 15
 
 wire        sd_buff_wr, img_readonly;
 wire  [7:0] sd_buff_addr;	// Address inside 256-word sector
@@ -322,13 +332,14 @@ hps_io #(.CONF_STR(CONF_STR)) hps_io
 	//.sd_buff_wr(sd_buff_wr),
 
 	.joystick_0(joystick_0)
+
 );
 
 ////////////////////   CLOCKS   ///////////////////
 
 wire clkm_48MHZ,clkm_32MHZ,clkc_12MHz,clk_24MHZ,clkm_6MHZ;
 wire clk_3M;
-wire clk_sys=clkm_32MHZ;
+wire clk_sys=clkm_48MHZ;
 wire clk_vid=clkm_48MHZ;
 //reg ce_pix;
 
@@ -341,9 +352,6 @@ pll pll(
 		.outclk_3(),
 		.outclk_4()		
 );
-
-
-wire m_pause  		= joystick_0[11];
 
 ///////////////////   CLOCK DIVIDER   ////////////////////
 
@@ -447,20 +455,12 @@ taitosj_fpga tssj(
 	.V_BLANK(vblank),
 	.RESET_n(~reset),
 	.pause(pause_cpu),
-	.m_right(~joystick_0[0]),
-	.m_left(~joystick_0[1]),	
-	.m_down(~joystick_0[2]),   
-	.m_up(~joystick_0[3]),  	
-	.m_shoot(~joystick_0[4]),
-	.m_shoot2(~joystick_0[5]), 	
-	.m_start1p(~joystick_0[6]),	
-	.m_start2p(~joystick_0[7]),	
-	.m_coina(~joystick_0[8]),  	
-	.m_coinb(~joystick_0[9]),  	
-	.m_service(joystick_0[10]),	
+	.P1CONTROLS(~joystick_0[15:0]),
 	.DIP1(sw[1]), 
 	.DIP2(sw[2]),
-	.DIP3(sw[4]),	
+	.DIP3(sw[3]),	
+	.DBG_SPR_FIRST(sw[5][4:0]),  // first sprite (5-bit)
+	.DBG_SPR_LAST(sw[6][4:0]),  // last sprite (5-bit)
 	.dn_addr(ioctl_addr),
 	.dn_data(ioctl_dout),
 	.dn_wr(ioctl_wr && rom_download), //& rom_download

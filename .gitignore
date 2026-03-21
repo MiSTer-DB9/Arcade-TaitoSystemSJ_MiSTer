@@ -38,3 +38,9 @@ c5_pin_model_dump.txt
 *_netlist
 *.cdf
 **/.DS_Store
+.claude/settings.local.json
+*.old
+*.stp
+*.pdf
+*.log
+*.log

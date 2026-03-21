@@ -108,16 +108,11 @@ module m5501_ram(
 	output reg [3:0] q
 );
 	reg[3:0] ram[255:0];
-	//reg[7:0] addr_reg;
-	
-	always @ (posedge clk)
-	begin
-		if (!nWE) begin
-			ram[addr] <= data;
-			//q<=4'b1111;
-		end
-		else q <=ram[addr]; //		
-		
+	reg nWE_d;
+
+	always @ (posedge clk) begin
+		if (nWE) ram[addr] <= data;
+		if (!nWE) q <=ram[addr];
 	end
 endmodule
 

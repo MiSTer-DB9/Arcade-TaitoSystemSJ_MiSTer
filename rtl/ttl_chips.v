@@ -183,7 +183,7 @@ assign #(DELAY_RISE, DELAY_FALL) c_out = C_computed;
 
 endmodule
 
-
+/*
 module ls138x ( //used
 	input  [2:0] A,
   	input		 nE1,
@@ -195,6 +195,7 @@ module ls138x ( //used
 reg [7:0] Q;
 wire trigger;
 assign trigger = !nE1 & !nE2 & E3;
+
 
 always @(*) begin
 
@@ -219,8 +220,25 @@ end
 
 assign Y = Q;
 
-endmodule
+endmodule*/
 
+module ls138x (
+  input  [2:0] A,
+  input        nE1,
+  input        nE2,
+  input        E3,
+  output [7:0] Y       // active-low, 1-of-8
+);
+
+  // Active-high enable: nE1=0, nE2=0, E3=1
+  wire en = ~nE1 & ~nE2 & E3;
+
+  // 1-hot decode then drive active-low outputs
+  // If en=0 -> {8{en}}=0 -> Y = ~0 = 8'hFF (all deasserted)
+  // If en=1 -> Y = bitwise NOT of one-hot(A)
+  assign Y = ~({8{en}} & (8'b0000_0001 << A));
+
+endmodule
 
 // 3-to-8 line decoder/demultiplexer; inverting
 module jt74138( // ref: 74??138
@@ -242,7 +260,7 @@ endmodule
 
 
 
-
+/*
 module ls139x //used
 (
 	input  [1:0] A,
@@ -269,8 +287,17 @@ end
 
 assign Y=Q;
 		
+endmodule*/
+module ls139x (
+  input  [1:0] A,
+  input        nE,    // active-low enable
+  output [3:0] Y      // active-low outputs
+);
+  wire en = ~nE;                      // active-high enable
+  // When en=0 -> {4{en}}=0 -> Y=~0 = 4'b1111 (all inactive)
+  // When en=1 -> Y = invert of one-hot at A (active-low selection)
+  assign Y = ~({4{en}} & (4'b0001 << A));
 endmodule
-
 
 module ls74x  //not used
 (
@@ -359,6 +386,30 @@ end
 
 endmodule
 
+// 1-bit-to-8-bit demultiplexer with storage (1-of-8 latch register)
+/*
+module mux1_8 (
+    input        clk,      // <— Added clock to make this properly synthesizable
+    input        nEN,      // active-low write enable
+    input        nRST,     // active-low reset
+    input        D,        // data in
+    input  [2:0] A,        // address select
+    output [7:0] Q         // latched outputs
+);
+
+    reg [7:0] latch;
+    assign Q = latch;
+
+    always @(posedge clk or negedge nRST) begin
+        if (!nRST)
+            latch <= 8'b0000_0000;
+        else if (!nEN)
+            latch[A] <= D;
+    end
+
+endmodule
+*/
+
 module mux1_8(
 	input nEN,
 	input nRST,
@@ -372,19 +423,10 @@ assign Q = latch; //handles memory & clear
 
 always @(*) begin
 	if (!nRST) latch<=8'b00000000;
-	if (!nEN) latch[A]<=D;
+	else if (!nEN) latch[A]<=D;
 end
-/*	else
-		case (A)
-		  3'b000: latch[7:0]<={7'b0000000,D};
-		  3'b001: latch[7:0]<={6'b000000,D,1'b0};
-		  3'b010: latch[7:0]<={5'b00000,D,2'b00};
-		  3'b011: latch[7:0]<={4'b0000,D,3'b000};
-		  3'b100: latch[7:0]<={3'b000,D,4'b0000};
-		  3'b101: latch[7:0]<={2'b00,D,5'b00000};
-		  3'b110: latch[7:0]<={1'b0,D,6'b000000};
-		  3'b111: latch[7:0]<={    D,7'b000000};
-		endcase*/
+
+
 endmodule
 	
 module mux4_1 (
@@ -650,7 +692,7 @@ endmodule
 
 
 
-module ls166x3 (
+/*module ls166x3 (
 	input clk,
 	input [7:0] pinA,
 	input [7:0] pinB,
@@ -674,6 +716,86 @@ end
 
 //assign QH = Qout[0];
 assign QH = {QoutC[0],QoutB[0],QoutA[0]};
+
+endmodule*/
+module ls166x3 (
+  input        clk,
+  input  [7:0] pinA,
+  input  [7:0] pinB,
+  input  [7:0] pinC,
+  input        PE,   // active low parallel load
+  input        clr,  // active low synchronous clear
+  output [2:0] QH
+);
+
+  reg [7:0] QoutA, QoutB, QoutC;
+
+  // Precompute the cheap paths once; avoids re-synthesizing per bit
+  wire [7:0] shrA = {1'b0, QoutA[7:1]};
+  wire [7:0] shrB = {1'b0, QoutB[7:1]};
+  wire [7:0] shrC = {1'b0, QoutC[7:1]};
+
+  always @(posedge clk) begin
+    if (!clr) begin
+      // synchronous clear
+      QoutA <= 8'd0;
+      QoutB <= 8'd0;
+      QoutC <= 8'd0;
+    end else if (!PE) begin
+      // parallel load
+      QoutA <= pinA;
+      QoutB <= pinB;
+      QoutC <= pinC;
+    end else begin
+      // shift
+      QoutA <= shrA;
+      QoutB <= shrB;
+      QoutC <= shrC;
+    end
+  end
+
+  assign QH = {QoutC[0], QoutB[0], QoutA[0]};
+
+endmodule
+
+module ls166x3_ce (
+  input        clk,
+  input			ce,
+  input  [7:0] pinA,
+  input  [7:0] pinB,
+  input  [7:0] pinC,
+  input        PE,   // active low parallel load
+  input        clr,  // active low synchronous clear
+  output [2:0] QH
+);
+
+  reg [7:0] QoutA, QoutB, QoutC;
+
+  // Precompute the cheap paths once; avoids re-synthesizing per bit
+  wire [7:0] shrA = {1'b0, QoutA[7:1]};
+  wire [7:0] shrB = {1'b0, QoutB[7:1]};
+  wire [7:0] shrC = {1'b0, QoutC[7:1]};
+
+  always @(posedge clk) begin
+    if (!clr) begin
+      // synchronous clear
+      QoutA <= 8'd0;
+      QoutB <= 8'd0;
+      QoutC <= 8'd0;
+    end else if (!PE) begin
+      // parallel load
+      QoutA <= pinA;
+      QoutB <= pinB;
+      QoutC <= pinC;
+    end else if (ce) begin
+      // shift
+      QoutA <= shrA;
+      QoutB <= shrB;
+      QoutC <= shrC;
+    end
+  end
+
+  assign QH = {QoutC[0], QoutB[0], QoutA[0]};
 
 endmodule
 
