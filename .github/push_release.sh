@@ -26,7 +26,7 @@ CORE_NAME=(Arcade-TaitoSJ)
 MAIN_BRANCH="main"
 COMPILATION_INPUT=(Arcade-TaitoSJ.qsf)
 COMPILATION_OUTPUT=(output_files/Arcade-TaitoSJ.rbf)
-QUARTUS_IMAGE="theypsilon/quartus-lite-c5:19.1.docker0"
+QUARTUS_IMAGE="${QUARTUS_IMAGE:?QUARTUS_IMAGE env not set — populated by workflow Resolve-Quartus-image step}"
 
 if [[ "${FORCED:-false}" != "true" ]] && \
    [[ "$(git log -n 1 --pretty=format:%an)" == "The CI/CD Bot" ]] && \
