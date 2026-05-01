@@ -31,7 +31,7 @@ jobs:
       uses: actions/cache@v5
       with:
         path: /tmp/docker-image.tar
-        key: docker-theypsilon/quartus-lite-c5:17.0.2.docker0
+        key: docker-theypsilon/quartus-lite-c5:19.1.docker0
 
     - name: Sync with upstream + Release
       run: ./.github/sync_release.sh theypsilon@gmail.com neurorulez@gmail.com timothy.redaelli@gmail.com
