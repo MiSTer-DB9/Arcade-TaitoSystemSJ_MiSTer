@@ -49,7 +49,7 @@ jobs:
         echo "image=${image}" >> "$GITHUB_OUTPUT"
         echo "Resolved Quartus image: ${image}"
       env:
-        QUARTUS_IMAGE_OVERRIDE: 
+        QUARTUS_IMAGE_OVERRIDE: theypsilon/quartus-lite-c5:17.1.docker0
 
     - name: Cache & load Quartus image
       if: steps.preflight.outputs.skip != 'true'
