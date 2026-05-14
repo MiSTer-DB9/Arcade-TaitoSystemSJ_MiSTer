@@ -120,7 +120,7 @@ eprom_3 SND_PROG_ROM  //Sound EPROM
 	.DATA(SND_PROG_ROM_data),
 
 	.ADDR_DL(dn_addr),
-	.CLK_DL(clkm_32MHZ),
+	.CLK_DL(clkm_48MHZ),
 	.DATA_IN(dn_data),
 	.CS_DL(snd_prom_cs_i),		//load data into ROM
 	.WR(dn_wr)

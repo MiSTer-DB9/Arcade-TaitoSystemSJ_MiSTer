@@ -1,7 +1,7 @@
 <misterromdescription>
-	<n>Alpine Ski (set 1)</n>
+	<n>Alpine Ski (set 2)</n>
 	<mameversion>0245</mameversion>
-	<setname>alpine</setname>
+	<setname>alpinea</setname>
 	<parent>alpine</parent>
 	<mratimestamp>202603211728</mratimestamp>
 	<year>1982</year>
@@ -15,9 +15,9 @@
 	<switches default="00,FB,00,FF,00,00,00,00">
 		<dip bits="8,9" name="Jump Bonus" ids="500-1500,800-2000,1000-2500,2000-4000"/>
 		<dip bits="11,12" name="Game Time" ids="1:00,1:30,2:00,2:30"/>
-		<dip bits="13" name="End of Race Time Bonus" ids="0:10,0:20"/>
 		<dip bits="14" name="Flip Screen" ids="On,Off"/>
 		<dip bits="15" name="Cabinet" ids="Cocktail,Upright"/>
+		<dip bits="13" name="Service Mode" ids="On,Off"/>
 		<dip bits="16,19" name="Coin A" ids="1C1C,1C2C,1C3C,1C4C,1C5C,1C6C,1C7C,1C8C,2C1C,3C1C,4C1C,5C1C,6C1C,7C1C,8C1C,9C1C"/>
 		<dip bits="20,23" name="Coin B" ids="1C1C,1C2C,1C3C,1C4C,1C5C,1C6C,1C7C,1C8C,2C1C,3C1C,4C1C,5C1C,6C1C,7C1C,8C1C,9C1C"/>
 		<dip bits="24,25" name="1st Extended Time" ids="10000,15000,20000,25000"/>
@@ -28,28 +28,28 @@
 	</switches>
 	<rom index="0" md5="none" zip="alpine.zip" type="merged|nonmerged">
 		<!-- Main CPU - Pass 1 (base + bank 0) [0x8000/0x8000] -->
-		<part crc="6b2a69b7" name="rh16.069"/>
-		<part crc="e344b0b7" name="rh17.068"/>
-		<part crc="753bdd87" name="rh18.067"/>
-		<part crc="3efb3fcd" name="rh19.066"/>
-		<part crc="c2cd4e79" name="rh20.065"/>
-		<part crc="74109145" name="rh21.064"/>
-		<part crc="efa82a57" name="rh22.055"/>
-		<part crc="77c25acf" name="rh23.054"/>
+		<part crc="7fbcb635" name="rh01-1.69"/>
+		<part crc="c83f95af" name="rh02.68"/>
+		<part crc="211102bc" name="rh03.67"/>
+		<part crc="494a91b0" name="rh04-1.66"/>
+		<part crc="d85588be" name="rh05.65"/>
+		<part crc="521fddb9" name="rh06.64"/>
+		<part crc="51f369a4" name="rh07.55"/>
+		<part crc="e0af9cb2" name="rh08.54"/>
 		<!-- Main CPU - Pass 2 (duplicate) [0x8000/0x8000] -->
-		<part crc="6b2a69b7" name="rh16.069"/>
-		<part crc="e344b0b7" name="rh17.068"/>
-		<part crc="753bdd87" name="rh18.067"/>
-		<part crc="3efb3fcd" name="rh19.066"/>
-		<part crc="c2cd4e79" name="rh20.065"/>
-		<part crc="74109145" name="rh21.064"/>
-		<part crc="efa82a57" name="rh22.055"/>
-		<part crc="77c25acf" name="rh23.054"/>
+		<part crc="7fbcb635" name="rh01-1.69"/>
+		<part crc="c83f95af" name="rh02.68"/>
+		<part crc="211102bc" name="rh03.67"/>
+		<part crc="494a91b0" name="rh04-1.66"/>
+		<part crc="d85588be" name="rh05.65"/>
+		<part crc="521fddb9" name="rh06.64"/>
+		<part crc="51f369a4" name="rh07.55"/>
+		<part crc="e0af9cb2" name="rh08.54"/>
 		<!-- GFX ROMs [0x4000/0x8000] -->
 		<part crc="4b1d9455" name="rh24.001"/>
 		<part crc="bf71e278" name="rh25.002"/>
 		<part crc="13da2a9b" name="rh26.003"/>
-		<part crc="425b52b0" name="rh27.004"/>
+		<part crc="0ff0d1fe" name="rh12.4"/>
 		<!-- Padding GFX: 0x4000 -->
 		<part repeat="0x4000"> 00 </part>
 		<!-- Audio CPU ROMs [0x1000/0x4000] -->

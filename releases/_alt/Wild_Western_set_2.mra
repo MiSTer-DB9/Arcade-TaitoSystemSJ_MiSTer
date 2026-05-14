@@ -1,7 +1,7 @@
 <misterromdescription>
-	<n>Wild Western (set 1)</n>
+	<n>Wild Western (set 2)</n>
 	<mameversion>0245</mameversion>
-	<setname>wwestern</setname>
+	<setname>wwestern1</setname>
 	<parent>wwestern</parent>
 	<mratimestamp>202603211728</mratimestamp>
 	<year>1982</year>
@@ -28,21 +28,21 @@
 	<rom index="0" md5="none" zip="wwestern.zip" type="merged|nonmerged">
 		<!-- Main CPU - Pass 1 (base + bank 0) [0x7000/0x8000] -->
 		<part crc="bfe10753" name="ww01.bin"/>
-		<part crc="20579e90" name="ww02d.bin"/>
+		<part crc="f011103a" name="ww02"/>
 		<part crc="0e65be37" name="ww03d.bin"/>
-		<part crc="b3565a31" name="ww04d.bin"/>
-		<part crc="089f3d89" name="ww05d.bin"/>
-		<part crc="c81c9736" name="ww06d.bin"/>
+		<part crc="68b31a6e" name="ww04a"/>
+		<part crc="78293f81" name="ww05"/>
+		<part crc="d015e435" name="ww06"/>
 		<part crc="1937cc17" name="ww07.bin"/>
 		<!-- Padding pass 1: 0x1000 -->
 		<part repeat="0x1000"> 00 </part>
 		<!-- Main CPU - Pass 2 (duplicate) [0x7000/0x8000] -->
 		<part crc="bfe10753" name="ww01.bin"/>
-		<part crc="20579e90" name="ww02d.bin"/>
+		<part crc="f011103a" name="ww02"/>
 		<part crc="0e65be37" name="ww03d.bin"/>
-		<part crc="b3565a31" name="ww04d.bin"/>
-		<part crc="089f3d89" name="ww05d.bin"/>
-		<part crc="c81c9736" name="ww06d.bin"/>
+		<part crc="68b31a6e" name="ww04a"/>
+		<part crc="78293f81" name="ww05"/>
+		<part crc="d015e435" name="ww06"/>
 		<part crc="1937cc17" name="ww07.bin"/>
 		<!-- Padding pass 2: 0x1000 -->
 		<part repeat="0x1000"> 00 </part>

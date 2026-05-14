@@ -3,9 +3,9 @@ module sync_bus (
 	input clkm_48MHZ,
 	input clkm_6MHZ,			//master clock
 	input clkb_6MHZ,			//master clock	
-	input CLK2,
-	input CLK3,
-	input clkm_3MHZ,			//pixel_clk?
+	//input CLK2,
+	//input CLK3,
+	//input clkm_3MHZ,			//pixel_clk?
 	input RESET_n,
 	input SPH1,
 	input SPH2,
@@ -21,7 +21,7 @@ module sync_bus (
 	output reg [7:0] PH,
 	output VSYNC,
 	output HSYNC,
-	output reg VBL,					//V.BL
+	output reg VBL,			//V.BL
 	output HBL,					//H.BL
 	output BLANK,
 	output SN1LD,
@@ -37,14 +37,15 @@ module sync_bus (
 );
 
 reg rHSYNC;
-//reg VBL;
-//reg rVCLK;
 reg [8:0] HPIX;
 reg [8:0] VPIX;
-//(!RESET_n) ? 9'd0 :
+
 				 
-always @(posedge clkm_6MHZ) HPIX <= (HPIX==9'd511) ? {9'd128} : HPIX+9'd1; //was d128
-always @(posedge clkm_6MHZ) PH <= ({PH[6:0],!(&HPIX[2:1])});
+always @(posedge clkm_6MHZ) begin
+	HPIX <= (HPIX==9'd511) ? {9'd128} : HPIX+9'd1; //was d128
+	PH <= ({PH[6:0],!(&HPIX[2:1])});
+end
+	
 
 reg nVINC,VTOG;
 
@@ -57,8 +58,6 @@ wire VINC=!nVINC;
 
 always @(posedge VINC) VPIX<=(VPIX==9'd511) ? 9'd248 : VPIX+9'd1;
 
-
-//assign PHA34 = (|PH[4:3]);	
 assign HSYNC = ((HPIX>=160)&(HPIX<=192)); //192	
 
 always @(posedge VPIX[4]) VBL<=(&VPIX[7:5]); //VN128&VN64&VN32
@@ -81,7 +80,7 @@ assign SN1LD =(DH1!=HPIX[2:0]);
 assign SN2LD =(DH2!=HPIX[2:0]);
 assign SN3LD =(DH3!=HPIX[2:0]);
 
-always @(posedge CLK3) begin //clkb_6MHZ
+always @(posedge clkb_6MHZ) begin //clkb_6MHZ
 	PH23  <= (|PH[3:2]);
 	PH01  <= (PH[0]);
 	PH45  <= (PH[4]);
@@ -93,14 +92,9 @@ wire [3:0] U26_Q;
 
 always @(posedge syncHM) SB_HM<=HPIX[8:4];
 
-ls139x U26A(
-	.A({!SB_HM[4],SB_HM[3]}),
-  	.nE(syncHM|VBL),
-  	.Y(U26_Q)
-);
-
-assign HLP0 = !(clkm_6MHZ|U26_Q[0]);
-assign HLP1 = !(clkm_6MHZ|U26_Q[1]);
-assign HLP2 = !(clkm_6MHZ|U26_Q[3]);
+wire en    = ~syncHM & ~VBL;
+wire [1:0] sel = {~SB_HM[4], SB_HM[3]};
+assign U26_Q = ~({4{en}} & (4'b0001 << sel));
+assign {HLP2, HLP1, HLP0} = {~U26_Q[3], ~U26_Q[1], ~U26_Q[0]} & {3{clkm_6MHZ}};
 
 endmodule
