@@ -98,12 +98,12 @@ jobs:
         fetch-depth: 1   # pinned SHA, tree only — no history walked here
 
     # Each leg derives its Quartus Standard from THIS core's .qsf
-    # (matrix.input). `17.1std` = Forks.ini per-fork pin (e.g.
+    # (matrix.input). `auto` = Forks.ini per-fork pin (e.g.
     # 17.0std) or `auto` (default → parse the .qsf LAST_QUARTUS_VERSION).
     - name: Resolve Quartus Standard version
       id: mode
       run: |
-        ver=$(QUARTUS_NATIVE_OVERRIDE='17.1std' ./.github/detect_quartus_version.sh '${{ matrix.input }}')
+        ver=$(QUARTUS_NATIVE_OVERRIDE='auto' ./.github/detect_quartus_version.sh '${{ matrix.input }}')
         echo "version=${ver}" >> "$GITHUB_OUTPUT"
         echo "Native Quartus Standard build for ${{ matrix.core }}: ${ver}"
 

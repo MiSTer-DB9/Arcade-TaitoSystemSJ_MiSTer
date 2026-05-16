@@ -89,7 +89,7 @@ jobs:
     - name: Resolve Quartus Standard version
       id: mode
       run: |
-        ver=$(QUARTUS_NATIVE_OVERRIDE='17.1std' ./.github/detect_quartus_version.sh '${{ matrix.input }}')
+        ver=$(QUARTUS_NATIVE_OVERRIDE='auto' ./.github/detect_quartus_version.sh '${{ matrix.input }}')
         echo "version=${ver}" >> "$GITHUB_OUTPUT"
         echo "Native Quartus Standard build for ${{ matrix.core }}: ${ver}"
 
