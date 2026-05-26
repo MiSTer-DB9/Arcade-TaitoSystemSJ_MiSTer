@@ -181,7 +181,7 @@ assign USER_PP = USER_PP_DRIVE;
 // [MiSTer-DB9 BEGIN] - DB9/SNAC8 support: joydb wrapper
 wire         CLK_JOY = CLK_50M;                 // Assign clock between 40-50Mhz
 wire   [1:0] joy_type        = status[127:126]; // 0=Off, 1=Saturn, 2=DB9MD, 3=DB15
-wire         joy_2p          = status[125];
+wire         joy_2p          = 1'b0;          // 1P-only: joy_2p unused
 wire         joy_db9md_en    = (joy_type == 2'd2);
 wire         joy_db15_en     = (joy_type == 2'd3);
 wire         joy_any_en      = |joy_type;
@@ -201,9 +201,23 @@ wire  [15:0] joydb_1, joydb_2;
 wire         joydb_1ena, joydb_2ena;
 wire  [15:0] joy_raw_payload;
 
+// [MiSTer-DB9 BEGIN] - DB9/SNAC8 support: probe-gating wires
+// SNAC cores: replace 1'b0 with the core's SNAC enable expression so SNAC
+// preempts the joydb wrapper on shared USER_IO pins. Default 1'b0 is no-op.
+wire         snac_active     = 1'b0;
+// MT32-pi probe-suppression gate. Auto-detected from MT32 signals declared
+// elsewhere in this file (mt32_disable / mt32_use / mt32_on_primary). Hand-edit
+// if the heuristic missed your core's gate expression. Suppresses the OSD-open
+// autodetect probe so it doesn't read the RPi's I2C master traffic as a ghost
+// Saturn signature. See the fork hazard notes.
+wire         mt32_primary_active = 1'b0;
+// [MiSTer-DB9 END]
 joydb joydb (
   .clk             ( CLK_JOY         ),
   .USER_IN         ( USER_IN         ),
+  .OSD_STATUS          ( OSD_STATUS          ),
+  .snac_active         ( snac_active         ),
+  .mt32_primary_active ( mt32_primary_active ),
   .joy_type        ( joy_type        ),
   .joy_2p          ( joy_2p          ),
   .saturn_unlocked ( saturn_unlocked ),
@@ -319,7 +333,6 @@ localparam CONF_STR = {
 	"-;",
 		// [MiSTer-DB9-Pro BEGIN] - Saturn-first joy_type (canonical bit notation)
 	"O[127:126],UserIO Joystick,Off,Saturn,DB9MD,DB15;",
-	"O[125],UserIO Players, 1 Player,2 Players;",
 	// [MiSTer-DB9-Pro END]
 
 	"-;",
